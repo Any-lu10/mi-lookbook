@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Lookbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500;1,9..144,600&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F2ECE1;
+    --card:#FBF8F1;
+    --ink:#1C1712;
+    --oxblood:#7A2033;
+    --gold:#B08A4E;
+    --olive:#6E6B45;
+    --plum:#5C3A55;
+    --steel:#3E4C63;
+    --line: rgba(28,23,18,0.14);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:40px 20px 80px;}
+
+  .eyebrow{
+    font-family:'Space Mono', monospace;
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--oxblood);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .eyebrow::before{ content:""; width:22px;height:1px; background:var(--oxblood); display:inline-block; }
+  h1.title{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:clamp(40px, 8vw, 76px);
+    line-height:0.95;
+    margin:0 0 16px;
+    letter-spacing:-0.01em;
+  }
+  .sub{ max-width:560px; font-size:15px; line-height:1.55; color:rgba(28,23,18,0.72); margin-bottom:28px; }
+  .sub b{color:var(--ink);font-weight:600;}
+
+  /* ---- Tabs principales ---- */
+  .maintabs{ display:flex; gap:10px; margin-bottom:28px; }
+  .maintab{
+    font-family:'Space Mono', monospace;
+    font-size:13px;
+    padding:12px 22px;
+    border-radius:999px;
+    border:1.5px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .maintab.active{ background:var(--ink); color:var(--cream); }
+  .maintab svg{ width:14px; height:14px; vertical-align:-2px; margin-right:6px; }
+
+  .panel{ display:none; }
+  .panel.active{ display:block; }
+
+  /* ---- Filtros ---- */
+  .filters{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; align-items:center; }
+  .filters.sub-row{ margin-bottom:26px; padding-bottom:22px; border-bottom:1px solid var(--line); }
+  .chip{
+    font-family:'Space Mono', monospace;
+    font-size:11.5px;
+    padding:8px 14px;
+    border-radius:999px;
+    border:1px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .chip:hover{ background:rgba(28,23,18,0.06); }
+  .chip.active{ background:var(--ink); color:var(--cream); }
+  .chip-fav{ margin-left:auto; }
+  .chip-fav svg{ width:11px; height:11px; vertical-align:-1px; margin-right:4px; }
+  .count-label{ font-family:'Space Mono', monospace; font-size:11px; color:rgba(28,23,18,0.5); margin-bottom:18px; }
+
+  /* ---- Grid de looks ---- */
+  .grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; }
+  @media (max-width:900px){ .grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:600px){ .grid{grid-template-columns:1fr;} }
+
+  .card{
+    position:relative;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:24px 20px 20px;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .card:hover{ transform:translateY(-3px); box-shadow:0 12px 26px rgba(28,23,18,0.1); }
+
+  .tag{
+    position:absolute; top:-11px; left:18px;
+    color:#fff; font-family:'Space Mono', monospace; font-size:10px;
+    letter-spacing:.07em; text-transform:uppercase;
+    padding:5px 10px 5px 18px; border-radius:2px; transform:rotate(-2deg);
+  }
+  .tag::before{ content:""; position:absolute; left:6px; top:50%; width:5px;height:5px; background:var(--cream); border-radius:50%; transform:translateY(-50%); }
+  .tag.frio{ background:var(--oxblood); }
+  .tag.verano{ background:var(--gold); }
+
+  .fav-heart{
+    position:absolute; top:14px; right:14px;
+    width:32px; height:32px; border-radius:50%;
+    background:rgba(255,255,255,0.85);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:var(--ink);
+  }
+  .fav-heart svg{ width:15px; height:15px; }
+  .fav-heart.active{ color:var(--oxblood); }
+
+  .num{ font-family:'Space Mono', monospace; font-size:10.5px; color:rgba(28,23,18,0.42); margin:18px 0 4px; }
+  h3.name{ font-family:'Fraunces', serif; font-weight:600; font-size:19px; margin:0 0 8px; line-height:1.15; }
+  .cat-label{ font-family:'Space Mono', monospace; font-size:10px; text-transform:uppercase; color:rgba(28,23,18,0.45); margin-bottom:12px; display:block; }
+
+  ul.pieces{ list-style:none; margin:0; padding:0; font-size:13.5px; line-height:1.6; color:rgba(28,23,18,0.82); }
+  ul.pieces li{ padding-left:14px; position:relative; }
+  ul.pieces li::before{ content:"—"; position:absolute; left:0; color:var(--oxblood); }
+
+  .tip{
+    margin-top:14px; padding-top:12px; border-top:1px dashed var(--line);
+    font-size:12px; font-style:italic; color:rgba(28,23,18,0.6);
+  }
+
+  .empty-msg{ grid-column:1/-1; text-align:center; padding:60px 20px; color:rgba(28,23,18,0.5); font-size:14px; }
+
+  /* ==================== MIS OUTFITS ==================== */
+  .diario-layout{ display:grid; grid-template-columns:300px 1fr; gap:26px; align-items:start; }
+  @media (max-width:800px){ .diario-layout{grid-template-columns:1fr;} }
+
+  .upload-card{ padding:22px; position:sticky; top:20px; }
+  .upload-card h3{ font-family:'Fraunces',serif; font-size:19px; margin:0 0 14px; }
+
+  .dropzone{
+    border:1.5px dashed var(--line); border-radius:6px; aspect-ratio:4/5;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+    cursor:pointer; overflow:hidden; position:relative; margin-bottom:14px;
+    background:rgba(28,23,18,0.03);
+  }
+  .dropzone:hover{ border-color:var(--oxblood); }
+  .dropzone svg{ width:24px; height:24px; color:rgba(28,23,18,0.4); }
+  .dropzone span{ font-size:12px; color:rgba(28,23,18,0.5); text-align:center; padding:0 16px; }
+  .dropzone img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .dropzone input{ position:absolute; inset:0; opacity:0; cursor:pointer; }
+
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:11px; font-weight:600; color:rgba(28,23,18,0.6); margin-bottom:6px; text-transform:uppercase; letter-spacing:.03em; }
+  .field input[type="text"]{
+    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:4px;
+    font-family:'Work Sans',sans-serif; font-size:14px; background:#fff;
+  }
+  .btn{
+    font-family:'Work Sans',sans-serif; font-weight:600; font-size:13px;
+    padding:11px 18px; border-radius:999px; cursor:pointer; border:none;
+  }
+  .btn-primary{ background:var(--ink); color:var(--cream); width:100%; }
+  .btn-ghost{ background:transparent; border:1px solid var(--line); color:var(--ink); width:100%; margin-top:8px; }
+
+  .diario-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:16px; }
+  .diario-card{ background:var(--card); border:1px solid var(--line); padding:8px 8px 12px; }
+  .diario-photo{ aspect-ratio:4/5; border-radius:3px; overflow:hidden; position:relative; margin-bottom:8px; background:#eee; }
+  .diario-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .diario-actions{ position:absolute; top:6px; right:6px; display:flex; gap:5px; }
+  .diario-actions button{
+    width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.88);
+    display:flex; align-items:center; justify-content:center; color:var(--ink); cursor:pointer; border:none;
+  }
+  .diario-actions button svg{ width:13px; height:13px; }
+  .diario-actions button.active{ color:var(--oxblood); }
+  .diario-fecha{ font-size:10.5px; color:rgba(28,23,18,0.5); padding:0 4px; }
+  .diario-nota{ font-size:12.5px; padding:2px 4px 0; }
+
+  /* ---- Banner de estado de conexión ---- */
+  .status-banner{
+    font-family:'Space Mono', monospace; font-size:11.5px;
+    padding:10px 16px; border-radius:6px; margin-bottom:20px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .status-banner.local{ background:#F1E9D2; color:#8C6A1F; }
+  .status-banner.cloud{ background:#E1F0E6; color:#2F6B45; }
+
+  /* ---- Toast ---- */
+  .toast{
+    position:fixed; left:50%; bottom:24px; transform:translate(-50%,20px);
+    background:var(--ink); color:var(--cream); padding:11px 18px; border-radius:999px;
+    font-size:13px; font-weight:600; opacity:0; pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease; z-index:100;
+  }
+  .toast.show{ opacity:1; transform:translate(-50%,0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Guardarropa personal · Edición 06 — Todo en uno</div>
+  <h1 class="title">Mi Lookbook</h1>
+  <p class="sub">Los 90 looks de tus 4 lookbooks anteriores, <b>más tus fotos reales</b> con favoritos. Hecho para usarse desde el celular.</p>
+
+  <div id="status-banner" class="status-banner local">⚠ Guardando solo en este navegador — configura Firebase para guardar en la nube (ver instrucciones al final del código)</div>
+
+  <div class="maintabs">
+    <button class="maintab active" data-tab="looks">👗 Looks (90)</button>
+    <button class="maintab" data-tab="diario">📸 Mis Outfits</button>
+  </div>
+
+  <!-- ============ PANEL: LOOKS ============ -->
+  <div class="panel active" id="panel-looks">
+    <div class="filters">
+      <button class="chip active" data-temporada="todos">Todos</button>
+      <button class="chip" data-temporada="frio">Frío / Templado</button>
+      <button class="chip" data-temporada="verano">Verano</button>
+      <button class="chip chip-fav" id="looks-fav-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-9.3-8.8C1.2 8 2.6 5 5.8 5c1.9 0 3.3 1 4.2 2.3.9-1.3 2.3-2.3 4.2-2.3 3.2 0 4.6 3 3.1 6.2C19 15.6 12 20 12 20Z"/></svg>Solo favoritos</button>
+    </div>
+    <div class="filters sub-row" id="cat-filters"></div>
+    <div class="count-label" id="looks-count"></div>
+    <div class="grid" id="looks-grid"></div>
+  </div>
+
+  <!-- ============ PANEL: MIS OUTFITS ============ -->
+  <div class="panel" id="panel-diario">
+    <div class="diario-layout">
+      <div class="card upload-card">
+        <h3>Subir foto</h3>
+        <label class="dropzone" id="dropzone">
+          <div class="dz-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8.5a1.5 1.5 0 0 1 1.5-1.5h2l1-2h7l1 2h2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-9Z"/><circle cx="12" cy="13" r="3.4"/></svg>
+            <span>Toca para elegir una foto</span>
+          </div>
+          <input type="file" accept="image/*" id="file-input">
+        </label>
+        <div class="field">
+          <label for="nota-input">Nota (opcional)</label>
+          <input type="text" id="nota-input" placeholder="Ej. Para la cena del viernes">
+        </div>
+        <button class="btn btn-primary" id="guardar-btn">Guardar</button>
+        <button class="btn btn-ghost" id="cancelar-btn">Cancelar</button>
+      </div>
+      <div class="diario-grid" id="diario-grid"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+/* ==========================================================
+   CONFIGURACIÓN DE FIREBASE
+   ----------------------------------------------------------
+   Ya está puesta tu configuración real del proyecto "lookbook-3947e".
+   La app guarda en la nube automáticamente.
+   ========================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyDA_LDiHuQnBLwRc87HH9DIWpj7ICCeEjA",
+  authDomain: "lookbook-3947e.firebaseapp.com",
+  projectId: "lookbook-3947e",
+  storageBucket: "lookbook-3947e.firebasestorage.app",
+  messagingSenderId: "705545989500",
+  appId: "1:705545989500:web:ef679d8ae0dbade535c8f9"
+};
+
+let db = null;
+let modoNube = false;
+
+if (firebaseConfig.apiKey !== "TU_API_KEY") {
+  try {
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+    const firestore = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+    const app = initializeApp(firebaseConfig);
+    db = firestore.getFirestore(app);
+    window.__fs = firestore; // helpers de Firestore, guardados para usarlos abajo
+    modoNube = true;
+  } catch (err) {
+    console.error("No se pudo conectar a Firebase, usando localStorage:", err);
+  }
+}
+
+const banner = document.getElementById('status-banner');
+if (modoNube) {
+  banner.textContent = '☁ Conectado a Firebase — tus fotos y favoritos se guardan en la nube';
+  banner.className = 'status-banner cloud';
+} 
+
+/* ==========================================================
+   CAPA DE DATOS — misma interfaz sin importar si es Firebase
+   o localStorage, para que el resto del código no le importe.
+   ========================================================== */
+const LS_DIARIO = 'miLookbook.diario';
+const LS_FAVLOOKS = 'miLookbook.favoritosLooks';
+
+async function obtenerMisOutfits() {
+  if (modoNube) {
+    const { collection, getDocs, query, orderBy } = window.__fs;
+    const snap = await getDocs(query(collection(db, 'misOutfits'), orderBy('fecha', 'desc')));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }
+  try { return JSON.parse(localStorage.getItem(LS_DIARIO)) || []; } catch { return []; }
+}
+
+async function guardarMiOutfit(entrada) {
+  if (modoNube) {
+    const { collection, addDoc } = window.__fs;
+    await addDoc(collection(db, 'misOutfits'), entrada);
+    return true;
+  }
+  try {
+    const lista = JSON.parse(localStorage.getItem(LS_DIARIO)) || [];
+    lista.unshift({ id: 'local-' + Date.now(), ...entrada });
+    localStorage.setItem(LS_DIARIO, JSON.stringify(lista));
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+}
+
+async function eliminarMiOutfit(id) {
+  if (modoNube) {
+    const { doc, deleteDoc } = window.__fs;
+    await deleteDoc(doc(db, 'misOutfits', id));
+  } else {
+    const lista = (JSON.parse(localStorage.getItem(LS_DIARIO)) || []).filter(e => e.id !== id);
+    localStorage.setItem(LS_DIARIO, JSON.stringify(lista));
+  }
+}
+
+async function toggleFavoritoMiOutfit(id, valorActual) {
+  if (modoNube) {
+    const { doc, updateDoc } = window.__fs;
+    await updateDoc(doc(db, 'misOutfits', id), { favorito: !valorActual });
+  } else {
+    const lista = JSON.parse(localStorage.getItem(LS_DIARIO)) || [];
+    const item = lista.find(e => e.id === id);
+    if (item) item.favorito = !item.favorito;
+    localStorage.setItem(LS_DIARIO, JSON.stringify(lista));
+  }
+}
+
+async function obtenerFavoritosLooks() {
+  if (modoNube) {
+    const { collection, getDocs } = window.__fs;
+    const snap = await getDocs(collection(db, 'favoritosLooks'));
+    return new Set(snap.docs.map(d => d.id));
+  }
+  try { return new Set(JSON.parse(localStorage.getItem(LS_FAVLOOKS)) || []); } catch { return new Set(); }
+}
+
+async function toggleFavoritoLook(id, actualmenteFav) {
+  if (modoNube) {
+    const { doc, setDoc, deleteDoc } = window.__fs;
+    if (actualmenteFav) await deleteDoc(doc(db, 'favoritosLooks', id));
+    else await setDoc(doc(db, 'favoritosLooks', id), { favorito: true });
+  } else {
+    const set = new Set(JSON.parse(localStorage.getItem(LS_FAVLOOKS)) || []);
+    actualmenteFav ? set.delete(id) : set.add(id);
+    localStorage.setItem(LS_FAVLOOKS, JSON.stringify([...set]));
+  }
+}
+
+/* ==========================================================
+   DATOS: los 90 looks de tus 4 lookbooks
+   ========================================================== */
+const COLORES_CAT = { escolar:'#8C4A3B', punk:'#7A2033', academia:'#6E6B45', oficina:'#3E4C63', casual:'#B08A4E', noche:'#5C3A55', deportivo:'#B08A4E', shorts:'#7A2033', faldas:'#3E8E86', tops:'#B08A4E' };
+const NOMBRE_CAT = { escolar:'Escolar', punk:'Punk', academia:'Academia', oficina:'Oficina', casual:'Casual', noche:'Noche', deportivo:'Deportivo', shorts:'Shorts', faldas:'Faldas', tops:'Tops' };
+
+const LOOKS = [
+{id:'l01',t:'frio',c:'escolar',n:'Roja de tablas',p:['Falda escocesa roja pleated','Blusa blanca con cuello','Medias negras','Mary jane negras'],tip:'El rojo de la falda es el que más se repite en tu inspo como pop de color.'},
+{id:'l02',t:'frio',c:'escolar',n:'Argyle de recreo',p:['Falda escocesa café/crema','Chaleco argyle','Calcetas blancas de olán','Mary jane negras'],tip:'Encaja directo con tus fotos de inspo con chaleco + calcetas altas.'},
+{id:'l03',t:'frio',c:'escolar',n:'Broche y cuello',p:['Falda beige con broche','Blusa blanca puff sleeve','Calcetas blancas','Oxford negros'],tip:'Versión más formal, buena para clases o evento escolar.'},
+{id:'l04',t:'frio',c:'escolar',n:'Mezclilla con lazo',p:['Falda de mezclilla pleated','Blusa satinada blanca','Medias negras','Mary jane negras'],tip:'Denim + satín, contraste de texturas que se ve en varias fotos guardadas.'},
+{id:'l05',t:'frio',c:'escolar',n:'Cadena escolar',p:['Falda negra con cadena','Top negro halter','Medias negras','Botas altas negras'],tip:'Cambia mary janes por botas altas para una versión más de noche.'},
+{id:'l06',t:'frio',c:'punk',n:'Imperdibles y botas',p:['Blazer negro con imperdibles','Top negro básico','Short negro','Medias negras','Botas Jadon'],tip:'Tu blazer statement — déjalo abierto para que se vea el detalle metálico.'},
+{id:'l07',t:'frio',c:'punk',n:'Piel y tablas',p:['Chaleco de piel negro','Camisa blanca','Falda negra pleated','Botas altas negras'],tip:'El chaleco de piel encima de blanco da contraste inmediato.'},
+{id:'l08',t:'frio',c:'punk',n:'Hebillas de mezclilla',p:['Chaleco de mezclilla con hebillas','Top negro','Falda negra con cadena','Botas Jadon'],tip:'Todo el metal trabaja junto, no le tengas miedo a mezclarlo.'},
+{id:'l09',t:'frio',c:'punk',n:'Encaje asomando',p:['Blazer negro mangas campana','Bustier de encaje negro','Pantalón negro wide-leg','Oxford'],tip:'Deja el blazer semi-abierto para que se asome el encaje.'},
+{id:'l10',t:'frio',c:'punk',n:'Cadena total',p:['Falda negra con cadena','Camisa blanca con cuello','Bolsa negra de cadena','Botas altas negras'],tip:'La bolsa de cadena repite el metal de la falda — se ve intencional.'},
+{id:'l11',t:'frio',c:'academia',n:'Cuadros de biblioteca',p:['Blazer charcoal','Falda plaid café','Camisa blanca','Calcetas + oxford'],tip:'Muy cercano a tus fotos de inspo con blazer crema + short plaid.'},
+{id:'l12',t:'frio',c:'academia',n:'Argyle formal',p:['Chaleco argyle gris/negro','Camisa blanca','Falda negra','Mary jane negras'],tip:'Es casi calca de una de tus fotos de referencia.'},
+{id:'l13',t:'frio',c:'academia',n:'Camel de otoño',p:['Chaleco tejido camel','Pantalón café wide-leg','Botas altas negras'],tip:'Look de todo el día, paleta cálida tipo campus otoñal.'},
+{id:'l14',t:'frio',c:'academia',n:'Doble capa',p:['Blazer negro','Chaleco tejido crema debajo','Falda negra','Medias + oxford'],tip:'El layering es la clave visual de la mitad de tu inspo.'},
+{id:'l15',t:'frio',c:'academia',n:'Beige académico',p:['Saco beige','Pantalón crema wide-leg','Mary jane negras'],tip:'Monocromático tierra, elegante sin usar negro.'},
+{id:'l16',t:'frio',c:'casual',n:'Cuello y mezclilla',p:['Jeans anchos claros','Camisa blanca con cuello','Tenis Adidas Pikachu'],tip:'Tu versión casual del look camisa blanca + jeans + tenis.'},
+{id:'l17',t:'frio',c:'casual',n:'Negro sobre negro',p:['Jeans negros wide-leg','Top negro cropped','Converse plataforma'],tip:'Sencillo, para días de flojera con buena silueta.'},
+{id:'l18',t:'frio',c:'casual',n:'Short + argyle',p:['Short de mezclilla','Chaleco argyle encima','Calcetas','Tenis Vans'],tip:'Mezcla preppy con casual — combo directo de tu inspo.'},
+{id:'l19',t:'frio',c:'casual',n:'Wrap denim',p:['Falda de mezclilla wrap con olán','Top blanco cami','Tenis Converse'],tip:'El olán le da un toque romántico sin perder lo casual.'},
+{id:'l20',t:'frio',c:'casual',n:'Cargo urbano',p:['Jeans cargo','Top negro','Bolsa de corazón negra','Tenis blancos'],tip:'La bolsa de corazón suma el toque coquette a un fit urbano.'},
+{id:'l21',t:'frio',c:'noche',n:'Corsé blanco',p:['Vestido corsé blanco','Botas altas negras','Bolsa de corazón'],tip:'El contraste blanco + negro es infalible para salir de noche.'},
+{id:'l22',t:'frio',c:'noche',n:'Encaje largo',p:['Bustier de encaje negro','Falda negra larga','Sandalias negras de tacón'],tip:'Silueta elegante, buena para cena o evento formal.'},
+{id:'l23',t:'frio',c:'noche',n:'Pinafora rosa',p:['Vestido pinafora rosa','Blusa blanca debajo','Calcetas altas negras','Mary jane negras'],tip:'Es prácticamente idéntico a tu foto de referencia.'},
+{id:'l24',t:'frio',c:'noche',n:'Blazer vestido',p:['Blazer-vestido negro cruzado','Medias negras','Sandalias de tacón'],tip:'Un solo piece hace todo el trabajo.'},
+{id:'l25',t:'frio',c:'noche',n:'Mesh y piel',p:['Bustier mesh negro','Pantalón negro leather flare','Sandalias negras'],tip:'El más atrevido de la lista — para antro o fiesta.'},
+{id:'l26',t:'frio',c:'deportivo',n:'Jersey #27',p:['Jersey negro #27 oversize','Short negro','Converse plataforma','Calcetas'],tip:'Suelto y fajado solo de un lado, como en tu inspo.'},
+{id:'l27',t:'frio',c:'deportivo',n:'Shacket a cuadros',p:['Set shacket + falda de cuadros','Top blanco básico','Tenis blancos'],tip:'El set ya viene armado — solo súmale el top blanco.'},
+{id:'l28',t:'frio',c:'deportivo',n:'Polo de finde',p:['Polo café con cuello blanco','Short beige','Tenis Adidas Pikachu'],tip:'El más relajado de todos.'},
+{id:'l29',t:'frio',c:'deportivo',n:'Cami + plisada',p:['Top blanco cami','Falda negra pleated','Sandalias negras deportivas'],tip:'Buen equilibrio entre cómodo y arreglado.'},
+{id:'l30',t:'frio',c:'deportivo',n:'Chaleco largo urbano',p:['Chaleco negro largo','Camisa blanca','Pantalón cargo negro','Botas Jadon'],tip:'Silueta más oversize, buena para clima fresco.'},
+{id:'l31',t:'frio',c:'oficina',n:'Rosa con blanco',p:['Saco rosa (abierto)','Blusa blanca wrap','Pantalón negro wide-leg','Oxford negros'],tip:'Tu único saco de color — dale protagonismo.'},
+{id:'l32',t:'frio',c:'oficina',n:'Lápiz y lazo',p:['Falda lápiz café','Blusa satinada azul con lazo','Oxford negros'],tip:'Combínala con textura para que no se vea soso.'},
+{id:'l33',t:'frio',c:'oficina',n:'Beige y khaki',p:['Chaleco beige de cuello V','Blusa blanca wrap','Pantalón khaki wide-leg','Mary jane negras'],tip:'Tonos tierra de punta a punta.'},
+{id:'l34',t:'frio',c:'oficina',n:'Gris y cuello contraste',p:['Pantalón gris de vestir','Top de cuello contraste','Blazer charcoal','Oxford'],tip:'El cuello contraste hace todo el trabajo visual.'},
+{id:'l35',t:'frio',c:'oficina',n:'Verde olivo',p:['Pantalón olivo','Polo café con cuello blanco','Oxford negros'],tip:'Combo de colores tierra poco usado.'},
+{id:'l36',t:'frio',c:'noche',n:'Rosa y gris',p:['Saco rosa','Top negro cami slip','Pantalón gris de vestir','Mary jane negras'],tip:'El slip se asoma por dentro del saco abierto.'},
+{id:'l37',t:'frio',c:'noche',n:'Satín negro total',p:['Falda negra recta','Blusa satinada negra con botones','Cinturón','Sandalias de tacón'],tip:'El satín negro sobre negro da brillo sin otro color.'},
+{id:'l38',t:'frio',c:'noche',n:'Ancho oscuro',p:['Jeans anchos oscuros','Top blanco drapeado asimétrico','Botas altas negras'],tip:'El drapeado sube el look de casual a salida.'},
+{id:'l39',t:'frio',c:'noche',n:'Mauve statement',p:['Pantalón rosa/mauve de vestir','Top negro cami slip','Blazer negro mangas campana','Sandalias de tacón'],tip:'El pantalón de color es el protagonista.'},
+{id:'l40',t:'frio',c:'academia',n:'Cuello V y drapeado',p:['Chaleco negro de cuello V','Top blanco drapeado asimétrico','Falda negra larga','Oxford'],tip:'El chaleco V es más entallado que los tejidos.'},
+{id:'l41',t:'frio',c:'academia',n:'Denim roto y suéter',p:['Jeans negros rotos','Suéter negro cuello polo','Mary jane negras'],tip:'El cuello polo le da aire académico al jean casual.'},
+{id:'l42',t:'frio',c:'academia',n:'Asimétrico café',p:['Pantalón khaki wide-leg','Top negro drapeado asimétrico','Oxford'],tip:'El drapeado merece salir solo, sin capas encima.'},
+{id:'l43',t:'frio',c:'academia',n:'Bordado navideño',p:['Suéter crema con pedrería','Falda negra','Medias negras','Mary jane negras'],tip:'El bordado da un toque especial para reunión o cena.'},
+{id:'l44',t:'frio',c:'punk',n:'Cuadros y moño',p:['Falda negra/blanca a cuadros','Top gris off-shoulder con moño','Medias negras','Botas Jadon'],tip:'El moño en la espalda se ve al moverte.'},
+{id:'l45',t:'frio',c:'punk',n:'Manga larga y falda recta',p:['Top negro de manga larga','Falda negra larga','Cinturón','Botas altas negras'],tip:'Silueta larga y ceñida sin perder el toque dramático.'},
+{id:'l46',t:'frio',c:'punk',n:'Hombro descubierto y cadena',p:['Top negro off-shoulder crop','Falda negra con cadena','Medias negras','Botas Jadon'],tip:'El hombro descubierto suaviza lo rígido de la cadena.'},
+{id:'l47',t:'frio',c:'casual',n:'Mostaza y moño blanco',p:['Short mostaza','Top blanco off-shoulder con moño','Tenis blancos'],tip:'Contraste simple, ideal para un día sin pensar mucho.'},
+{id:'l48',t:'frio',c:'casual',n:'Denim claro anudado',p:['Jeans claros rotos','Tank negro','Camisa negra cropped anudada','Converse plataforma'],tip:'Anudar la camisa da capas sin abrigar de más.'},
+{id:'l49',t:'frio',c:'casual',n:'Contraste deportivo',p:['Top negro/blanco de contraste crop','Pantalón negro wide-leg','Converse plataforma'],tip:'El cuello de contraste sube el nivel sin esfuerzo.'},
+{id:'l50',t:'frio',c:'escolar',n:'Set corazón',p:['Top blanco escote corazón + falda negra wrap (set)','Medias negras','Mary jane negras'],tip:'De tus piezas más coquette, sin necesitar nada extra.'},
+{id:'l51',t:'frio',c:'oficina',n:'Beige con rayas',p:['Saco beige','Camisa blanca de rayas','Jeans claros flare','Oxford negros'],tip:'El blazer eleva el jean flare — casual friday sin perder formalidad.'},
+{id:'l52',t:'frio',c:'oficina',n:'Charcoal y crema',p:['Blazer charcoal','Camisa blanca','Pantalón crema wide-leg','Oxford'],tip:'Contraste tonal que se ve carísimo.'},
+{id:'l53',t:'frio',c:'oficina',n:'Argyle de oficina',p:['Chaleco argyle café/crema','Camisa blanca','Pantalón negro wide-leg','Oxford'],tip:'Sacar el argyle de la falda al pantalón lo vuelve más formal.'},
+{id:'l54',t:'frio',c:'oficina',n:'Blanco entallado',p:['Camisa blanca entallada satinada','Pantalón negro de vestir','Cinturón','Oxford'],tip:'Minimalista, ideal para presentaciones o juntas.'},
+{id:'l55',t:'frio',c:'noche',n:'Encaje bajo blazer',p:['Bustier de encaje negro','Blazer negro mangas campana (abierto)','Pantalón negro wide-leg','Sandalias de tacón'],tip:'Bustier como top de blazer abierto — power dressing.'},
+{id:'l56',t:'frio',c:'noche',n:'Mesh y denim oscuro',p:['Bustier mesh negro','Jeans oscuros wide-leg','Bolsa de corazón','Sandalias de tacón'],tip:'De falda a jean lo hace más usable de día a noche.'},
+{id:'l57',t:'frio',c:'noche',n:'Gris sobre gris',p:['Top gris off-shoulder con moño','Pantalón gris de vestir','Sandalias de tacón'],tip:'Monocromático en un color que casi no usas.'},
+{id:'l58',t:'frio',c:'academia',n:'Tejido blanco y rayas',p:['Chaleco tejido blanco','Camisa de rayas debajo','Falda negra','Mary jane negras'],tip:'Rayas + tejido, combinación clásica de campus.'},
+{id:'l59',t:'frio',c:'academia',n:'Denim con hebillas y drapeado',p:['Chaleco de mezclilla con hebillas','Top blanco drapeado asimétrico','Falda negra','Mary jane negras'],tip:'Contraste de texturas fuerte, de tus combinaciones más originales.'},
+{id:'l60',t:'frio',c:'academia',n:'Camel y trouser',p:['Chaleco tejido camel','Pantalón negro de vestir','Botas altas negras'],tip:'Camel con negro directo se ve más moderno.'},
+{id:'l61',t:'frio',c:'punk',n:'Bell sleeve y denim',p:['Blazer negro mangas campana','Top negro básico','Jeans negros wide-leg','Botas Jadon'],tip:'De falda a jean baja la formalidad sin perder el filo.'},
+{id:'l62',t:'frio',c:'punk',n:'Chaleco largo minimal',p:['Chaleco negro largo (abierto)','Top negro básico','Jeans negros wide-leg','Botas Jadon'],tip:'Silueta alargada sin necesitar falda.'},
+{id:'l63',t:'frio',c:'punk',n:'Cropped y cadena',p:['Camisa negra cropped','Falda negra con cadena','Bolsa de corazón','Botas Jadon'],tip:'La bolsa le baja lo agresivo a la cadena — punk coquette.'},
+{id:'l64',t:'frio',c:'punk',n:'Pines y falda cuadros',p:['Blazer negro con imperdibles','Top negro cami slip','Falda blanco/negro a cuadros','Medias + Botas Jadon'],tip:'El print rompe lo muy oscuro del blazer.'},
+{id:'l65',t:'frio',c:'casual',n:'Mariposas y flare',p:['Blusa print mariposas','Jeans claros flare','Tenis blancos'],tip:'De tus básicos más alegres, úsalo más.'},
+{id:'l66',t:'frio',c:'casual',n:'Jersey con falda',p:['Jersey negro #27 oversize','Falda de mezclilla wrap','Tenis Converse plataforma'],tip:'La falda wrap le da un aire más femenino al jersey.'},
+{id:'l67',t:'frio',c:'casual',n:'Polo con plisada',p:['Polo café con cuello blanco','Falda negra pleated','Calcetas + oxford'],tip:'Se siente más tenis de club que deportivo casual.'},
+{id:'l68',t:'frio',c:'escolar',n:'Moño y cuadros café',p:['Top blanco off-shoulder con moño','Falda escocesa café/crema','Medias negras','Zapatos oxford'],tip:'Aire romántico-escolar muy directo de tu inspo.'},
+{id:'l69',t:'frio',c:'escolar',n:'Slip bajo saco beige',p:['Saco beige (abierto)','Top negro cami slip','Falda beige pleated','Mary jane negras'],tip:'Muy coquette clean girl.'},
+{id:'l70',t:'frio',c:'escolar',n:'Cuello contraste y tablas',p:['Top negro/blanco de cuello contraste','Falda beige con broche','Calcetas blancas','Mary jane negras'],tip:'Más práctico para el diario, sin fajar nada.'},
+{id:'l71',t:'verano',c:'shorts',n:'Mostaza y blanco',p:['Short mostaza','Top blanco cami','Sandalias negras plataforma'],tip:'El mostaza es tu único color fuerte de shorts.'},
+{id:'l72',t:'verano',c:'shorts',n:'Halter negro',p:['Short negro','Top halter negro','Sandalias deportivas negras'],tip:'Total black pero fresco.'},
+{id:'l73',t:'verano',c:'shorts',n:'Mariposas',p:['Short camel pleated','Blusa print mariposas','Sandalias cafés cruzadas'],tip:'Se siente muy de tarde de verano.'},
+{id:'l74',t:'verano',c:'shorts',n:'Polo de alberca',p:['Short beige','Polo café con cuello blanco','Tenis Adidas Pikachu'],tip:'Bueno para salidas de día o paseo.'},
+{id:'l75',t:'verano',c:'shorts',n:'Camisa anudada',p:['Short negro','Camisa blanca anudada al frente','Tenis blancos'],tip:'Anudar deja ver cintura y baja el calor del look.'},
+{id:'l76',t:'verano',c:'faldas',n:'Wrap de olán',p:['Falda de mezclilla wrap con olán','Top blanco','Vans'],tip:'El corte wrap deja pasar el aire.'},
+{id:'l77',t:'verano',c:'faldas',n:'Denim + crop',p:['Falda denim pleated','Crop top negro','Converse plataforma'],tip:'Denim + negro, básico que nunca falla.'},
+{id:'l78',t:'verano',c:'faldas',n:'Beige con tirantes',p:['Falda beige pleated','Top blanco de tirantes','Sandalias negras'],tip:'Monocromático claro para días de mucho sol.'},
+{id:'l79',t:'verano',c:'faldas',n:'Cuadros rojos',p:['Falda escocesa roja pleated','Top blanco cropped','Sandalias negras'],tip:'Versión ligera del look coquette rojo, sin medias.'},
+{id:'l80',t:'verano',c:'tops',n:'Chaleco como top',p:['Chaleco de mezclilla con hebillas (solo)','Short negro','Tenis blancos'],tip:'Usarlo directo sobre la piel se ve de verano.'},
+{id:'l81',t:'verano',c:'tops',n:'Tejido crema solo',p:['Chaleco tejido crema (solo)','Short beige','Sandalias'],tip:'El sweater vest sin nada debajo funciona como top.'},
+{id:'l82',t:'verano',c:'tops',n:'Escote corazón',p:['Top blanco escote corazón','Short negro','Sandalias negras'],tip:'Directo de tu inspo, sin medias para el calor.'},
+{id:'l83',t:'verano',c:'tops',n:'Jersey anudado',p:['Jersey #27 anudado al frente','Short negro','Tenis blancos'],tip:'Anudado le quita peso visual al jersey oversize.'},
+{id:'l84',t:'verano',c:'noche',n:'Corsé ligero',p:['Vestido corsé blanco','Sandalias negras de tacón'],tip:'Sin mangas y de falda corta, tu opción más fresca de noche.'},
+{id:'l85',t:'verano',c:'noche',n:'Encaje y short',p:['Bustier de encaje negro','Short negro','Sandalias de tacón'],tip:'Cambiar la falda larga por short lo hace más veraniego.'},
+{id:'l86',t:'verano',c:'noche',n:'Mesh y short',p:['Bustier mesh negro','Short negro','Sandalias de tacón'],tip:'Para antro o fiesta, sin el pantalón que pesa más.'},
+{id:'l87',t:'verano',c:'noche',n:'Pinafora sola',p:['Vestido pinafora rosa (sin blusa debajo)','Sandalias negras'],tip:'Se vuelve un vestido ligero de tirantes.'},
+{id:'l88',t:'verano',c:'deportivo',n:'Halter y Pikachu',p:['Short mostaza','Top negro halter','Tenis Adidas Pikachu'],tip:'Contraste mostaza/negro con un tenis divertido.'},
+{id:'l89',t:'verano',c:'deportivo',n:'Satín azul',p:['Falda denim pleated','Blusa satinada azul con lazo','Sandalias negras'],tip:'Un toque más arreglado sin dejar de ser cómodo.'},
+{id:'l90',t:'verano',c:'deportivo',n:'Cami y wrap',p:['Top blanco cami','Falda de mezclilla wrap','Sandalias planas'],tip:'El más ligero de todos, ideal para calor extremo.'},
+];
+
+/* ==========================================================
+   ESTADO Y RENDER — LOOKS
+   ========================================================== */
+let favoritosLooks = new Set();
+let filtroTemporada = 'todos';
+let filtroCategoria = 'todas';
+let soloFavoritos = false;
+
+function renderCatFilters() {
+  const cats = ['todas', ...new Set(LOOKS.map(l => l.c))];
+  document.getElementById('cat-filters').innerHTML = cats.map(c => `
+    <button class="chip ${c === filtroCategoria ? 'active' : ''}" data-cat="${c}">${c === 'todas' ? 'Todas las categorías' : NOMBRE_CAT[c]}</button>
+  `).join('');
+  document.querySelectorAll('#cat-filters .chip').forEach(btn => {
+    btn.addEventListener('click', () => { filtroCategoria = btn.dataset.cat; renderLooks(); });
+  });
+}
+
+function renderLooks() {
+  const filtrados = LOOKS.filter(l =>
+    (filtroTemporada === 'todos' || l.t === filtroTemporada) &&
+    (filtroCategoria === 'todas' || l.c === filtroCategoria) &&
+    (!soloFavoritos || favoritosLooks.has(l.id))
+  );
+  document.getElementById('looks-count').textContent = `${filtrados.length} de ${LOOKS.length} looks`;
+
+  const grid = document.getElementById('looks-grid');
+  if (filtrados.length === 0) {
+    grid.innerHTML = `<div class="empty-msg">No hay looks con estos filtros.</div>`;
+    return;
+  }
+  grid.innerHTML = filtrados.map(l => {
+    const fav = favoritosLooks.has(l.id);
+    return `
+    <div class="card">
+      <span class="tag ${l.t}">${l.t === 'frio' ? 'Frío/Templado' : 'Verano'}</span>
+      <div class="fav-heart ${fav ? 'active' : ''}" data-look-id="${l.id}">
+        <svg viewBox="0 0 24 24" fill="${fav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-9.3-8.8C1.2 8 2.6 5 5.8 5c1.9 0 3.3 1 4.2 2.3.9-1.3 2.3-2.3 4.2-2.3 3.2 0 4.6 3 3.1 6.2C19 15.6 12 20 12 20Z"/></svg>
+      </div>
+      <span class="cat-label">${NOMBRE_CAT[l.c]}</span>
+      <h3 class="name">${l.n}</h3>
+      <ul class="pieces">${l.p.map(x => `<li>${x}</li>`).join('')}</ul>
+      <div class="tip">${l.tip}</div>
+    </div>`;
+  }).join('');
+
+  grid.querySelectorAll('.fav-heart').forEach(el => {
+    el.addEventListener('click', async () => {
+      const id = el.dataset.lookId;
+      const actual = favoritosLooks.has(id);
+      await toggleFavoritoLook(id, actual);
+      actual ? favoritosLooks.delete(id) : favoritosLooks.add(id);
+      renderLooks();
+      showToast(actual ? 'Quitado de favoritos' : 'Agregado a favoritos ♥');
+    });
+  });
+}
+
+document.querySelectorAll('#panel-looks .filters:not(.sub-row) .chip:not(.chip-fav)').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#panel-looks .filters:not(.sub-row) .chip:not(.chip-fav)').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filtroTemporada = btn.dataset.temporada;
+    renderLooks();
+  });
+});
+document.getElementById('looks-fav-toggle').addEventListener('click', (e) => {
+  soloFavoritos = !soloFavoritos;
+  e.currentTarget.classList.toggle('active', soloFavoritos);
+  renderLooks();
+});
+
+/* ==========================================================
+   MIS OUTFITS — subir foto, guardar, favoritos, eliminar
+   ========================================================== */
+let fotoActual = null;
+
+function procesarFoto(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('No se pudo leer el archivo'));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('No se pudo procesar la imagen'));
+      img.onload = () => {
+        const ANCHO_MAX = 900;
+        const escala = Math.min(1, ANCHO_MAX / img.width);
+        const w = Math.round(img.width * escala), h = Math.round(img.height * escala);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById('file-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    fotoActual = await procesarFoto(file);
+    const dz = document.getElementById('dropzone');
+    dz.querySelector('.dz-placeholder').style.display = 'none';
+    let img = dz.querySelector('img');
+    if (!img) { img = document.createElement('img'); dz.appendChild(img); }
+    img.src = fotoActual;
+  } catch (err) {
+    showToast('No se pudo leer esa imagen');
+  }
+});
+
+function resetForm() {
+  fotoActual = null;
+  document.getElementById('nota-input').value = '';
+  document.getElementById('file-input').value = '';
+  const dz = document.getElementById('dropzone');
+  dz.querySelector('.dz-placeholder').style.display = '';
+  const img = dz.querySelector('img');
+  if (img) img.remove();
+}
+document.getElementById('cancelar-btn').addEventListener('click', resetForm);
+
+document.getElementById('guardar-btn').addEventListener('click', async () => {
+  if (!fotoActual) { showToast('Primero elige una foto'); return; }
+  const entrada = {
+    fecha: new Date().toISOString(),
+    foto: fotoActual,
+    nota: document.getElementById('nota-input').value.trim(),
+    favorito: false,
+  };
+  const ok = await guardarMiOutfit(entrada);
+  if (!ok) { showToast('No se pudo guardar (¿almacenamiento lleno?)'); return; }
+  resetForm();
+  await renderDiario();
+  showToast('Outfit guardado ✨');
+});
+
+async function renderDiario() {
+  const lista = await obtenerMisOutfits();
+  const grid = document.getElementById('diario-grid');
+  if (lista.length === 0) {
+    grid.innerHTML = `<div class="empty-msg" style="grid-column:1/-1">Todavía no subes ninguna foto.</div>`;
+    return;
+  }
+  grid.innerHTML = lista.map(e => `
+    <div class="diario-card">
+      <div class="diario-photo">
+        <img src="${e.foto}" alt="">
+        <div class="diario-actions">
+          <button class="fav-btn ${e.favorito ? 'active' : ''}" data-id="${e.id}">
+            <svg viewBox="0 0 24 24" fill="${e.favorito ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-9.3-8.8C1.2 8 2.6 5 5.8 5c1.9 0 3.3 1 4.2 2.3.9-1.3 2.3-2.3 4.2-2.3 3.2 0 4.6 3 3.1 6.2C19 15.6 12 20 12 20Z"/></svg>
+          </button>
+          <button class="del-btn" data-id="${e.id}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="diario-fecha">${new Date(e.fecha).toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'})}</div>
+      ${e.nota ? `<div class="diario-nota">${e.nota}</div>` : ''}
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.fav-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const item = lista.find(x => x.id === btn.dataset.id);
+      await toggleFavoritoMiOutfit(btn.dataset.id, item.favorito);
+      renderDiario();
+    });
+  });
+  grid.querySelectorAll('.del-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      await eliminarMiOutfit(btn.dataset.id);
+      renderDiario();
+      showToast('Foto eliminada');
+    });
+  });
+}
+
+/* ==========================================================
+   TABS PRINCIPALES + TOAST
+   ========================================================== */
+document.querySelectorAll('.maintab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.maintab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* ==========================================================
+   INICIO
+   ========================================================== */
+favoritosLooks = await obtenerFavoritosLooks();
+renderCatFilters();
+renderLooks();
+renderDiario();
+</script>
+
+<!--
+==========================================================
+CÓMO CONECTAR FIREBASE (opcional, para guardar en la nube)
+==========================================================
+Sin esto, la app funciona perfecto guardando todo en tu navegador
+(localStorage) — pero solo en ese dispositivo. Si quieres que tus
+fotos y favoritos se vean igual desde el celular y la computadora,
+sigue estos pasos (10-15 minutos, gratis):
+
+1. Ve a https://console.firebase.google.com y entra con tu cuenta de Google.
+2. Clic en "Agregar proyecto" (o "Add project"). Ponle un nombre, ej. "mi-lookbook".
+   Puedes desactivar Google Analytics, no lo necesitas para esto.
+3. Dentro del proyecto, en el menú izquierdo: "Compilación" → "Firestore Database".
+4. Clic en "Crear base de datos". Elige "Modo de prueba" (Test mode) para empezar
+   — esto la deja abierta 30 días, ideal mientras pruebas. Elige la región más
+   cercana a ti (ej. us-central o southamerica-east1).
+5. Ahora registra tu app web: en la página principal del proyecto (ícono de
+   engranaje → "Configuración del proyecto"), baja hasta "Tus apps" y clic en
+   el ícono </> (Web). Ponle un apodo, ej. "lookbook-web". NO necesitas activar
+   Firebase Hosting en ese paso.
+6. Te va a mostrar un bloque de código con "const firebaseConfig = {...}".
+   Copia esos valores y pégalos exactamente en la sección firebaseConfig al
+   inicio del <script> de este archivo (arriba del todo).
+7. Guarda el archivo y vuelve a abrirlo — el banner de arriba debería cambiar
+   a "☁ Conectado a Firebase".
+
+IMPORTANTE — antes de compartir esto o dejarlo mucho tiempo en modo de prueba:
+El "modo de prueba" deja que CUALQUIERA con el link de tu app pueda leer y
+escribir en tu base de datos, no solo tú. Para uso personal a corto plazo está
+bien, pero si lo vas a usar seguido, en Firestore Database → pestaña "Reglas",
+cambia las reglas a algo como esto (requiere activar Firebase Authentication
+para el "request.auth" — pregúntame si quieres que te ayude a armar esa parte
+cuando llegues aquí, es un paso extra que no cubrí en este archivo):
+
+  rules_version = '2';
+  service cloud.firestore {
+    match /databases/{database}/documents {
+      match /{document=**} {
+        allow read, write: if request.auth != null;
+      }
+    }
+  }
+
+Para ALOJAR este archivo en internet (para no depender de mandártelo tú misma
+al celular cada vez), lo más simple gratis es GitHub Pages:
+1. Crea una cuenta en https://github.com si no tienes.
+2. Crea un repositorio nuevo, ej. "mi-lookbook", público.
+3. Sube este archivo y renómbralo a "index.html".
+4. En el repositorio: Settings → Pages → Source: "main branch" → Save.
+5. En unos minutos te da una URL tipo https://tuusuario.github.io/mi-lookbook/
+   — esa la abres desde el celular, ya sin depender de tu compu prendida.
+-->
+</body>
+</html>
